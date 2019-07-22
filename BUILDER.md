@@ -8,7 +8,6 @@ Example
 
 ```
 docker run --rm -v $(pwd):/install -e PLUGINS=git,filebrowser abiosoft/caddy:builder
-
 ```
 
 ### Volumes

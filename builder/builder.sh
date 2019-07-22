@@ -1,7 +1,7 @@
 #!/bin/sh
 
 VERSION=${VERSION:-"1.0.1"}
-TELEMETRY=${ENABLE_TELEMETRY:-"true"}
+TELEMETRY=${ENABLE_TELEMETRY:-"false"}
 IMPORT="github.com/caddyserver/caddy"
 
 # version <1.0.1 needs to use old import path
