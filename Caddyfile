@@ -1,7 +1,6 @@
-0.0.0.0
+http:// {
+    gzip
+    root /srv/default/
+}
 
-browse
-
-log stdout
-
-errors stdout
+import conf.d/*.conf

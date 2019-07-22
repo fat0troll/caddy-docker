@@ -1,6 +1,6 @@
 # caddy
 
-A [Docker](https://docker.com) image for [Caddy](https://caddyserver.com). This image includes [git](https://caddyserver.com/docs/http.git), [cors](https://caddyserver.com/docs/http.cors), [realip](https://caddyserver.com/docs/http.realip), [expires](https://caddyserver.com/docs/http.expires), [cache](https://caddyserver.com/docs/http.cache) and [cloudflare](https://caddyserver.com/docs/tls.dns.cloudflare) plugins.
+A [Docker](https://docker.com) image for [Caddy](https://caddyserver.com). This image includes [git](https://caddyserver.com/docs/http.git), [cors](https://caddyserver.com/docs/http.cors), [realip](https://caddyserver.com/docs/http.realip), [expires](https://caddyserver.com/docs/http.expires), [cache](https://caddyserver.com/docs/http.cache), [cloudflare](https://caddyserver.com/docs/tls.dns.cloudflare) and [dnsimple](https://caddyserver.com/docs/tls.dns.dnsimple) plugins.
 
 Plugins can be configured via the [`plugins` build arg](#custom-plugins).
 
@@ -19,17 +19,30 @@ Caddy may prompt to agree to [Let's Encrypt Subscriber Agreement](https://letsen
 
 ### Telemetry Stats
 
-Starting from `v0.11.0`, [Telemetry stats](https://caddyserver.com/docs/telemetry) are submitted to Caddy by default. To use Caddy without telemetry, use the `:no-stats` or `:<version>-no-stats` tags. e.g. `:0.11.0-no-stats`, `:0.11.0-php-no-stats`.
+Starting from `v0.11.0`, [Telemetry stats](https://caddyserver.com/docs/telemetry) are submitted to Caddy by default. This Docker image opts-out from telemetry automatically.
 
 ## Getting Started
 
 ```sh
-$ docker run -d -p 2015:2015 abiosoft/caddy
+$ docker run -d -p 2015:2015 fat0troll/caddy
 ```
 
-Point your browser to `http://127.0.0.1:2015`.
+Point your browser to `http://127.0.0.1:2015`. You will be greeted with Fedora default index.html (distributed with Caddy EPEL packages).
 
 > Be aware! If you don't bind mount the location certificates are saved to, you may hit Let's Encrypt rate [limits](https://letsencrypt.org/docs/rate-limits/) rending further certificate generation or renewal disallowed (for a fixed period)! See "Saving Certificates" below!
+
+### Configuration providing
+
+This image provides easy configuration via supplying directory with Caddy config files. To achieve this, create on your host directory with Caddy configs (named *.conf), and then run:
+
+```sh
+$ docker run -d \
+    -v $(pwd)/conf:/etc/caddy/conf.d \
+    -p 80:80 -p 443:443 \
+    fat0troll/caddy
+```
+
+Here, `/etc/caddy/conf.d` is the location _inside_ the container where caddy will look for config files.
 
 ### Saving Certificates
 
@@ -38,10 +51,10 @@ Let's Encrypt has [rate limit](https://community.letsencrypt.org/t/rate-limits-f
 
 ```sh
 $ docker run -d \
-    -v $(pwd)/Caddyfile:/etc/Caddyfile \
+    -v $(pwd)/conf:/etc/caddy/conf.d \
     -v $HOME/.caddy:/root/.caddy \
     -p 80:80 -p 443:443 \
-    abiosoft/caddy
+    fat0troll/caddy
 ```
 
 Here, `/root/.caddy` is the location _inside_ the container where caddy will save certificates.
@@ -59,46 +72,22 @@ $ docker run -d \
 Above, we utilize the `CADDYPATH` environment variable to define a different location inside the container for
 certificates to be stored. This is probably the safest option as it ensures any future docker image changes don't interfere with your ability to save certificates!
 
-### PHP
-
-`:[<version>-]php` variant of this image bundles PHP-FPM alongside essential php extensions and [composer](https://getcomposer.org). e.g. `:php`, `:0.10.14-php`
-
-```sh
-$ docker run -d -p 2015:2015 abiosoft/caddy:php
-```
-
-Point your browser to `http://127.0.0.1:2015` and you will see a php info page.
-
-##### Local php source
-
-Replace `/path/to/php/src` with your php sources directory.
-
-```sh
-$ docker run -d -v /path/to/php/src:/srv -p 2015:2015 abiosoft/caddy:php
-```
-
-Point your browser to `http://127.0.0.1:2015`.
-
-##### Note
-
-Your `Caddyfile` must include the line `on startup php-fpm7`. For Caddy to be PID 1 in the container, php-fpm7 could not be started.
-
 ### Using git sources
 
 Caddy can serve sites from git repository using [git](https://caddyserver.com/docs/http.git) plugin.
 
-##### Create Caddyfile
+#### Create Caddyfile
 
 Replace `github.com/abiosoft/webtest` with your repository.
 
 ```sh
-$ printf "0.0.0.0\nroot src\ngit github.com/abiosoft/webtest" > Caddyfile
+$ printf "0.0.0.0\nroot src\ngit github.com/abiosoft/webtest" > conf/yoursite.conf
 ```
 
-##### Run the image
+#### Run the image
 
 ```sh
-$ docker run -d -v $(pwd)/Caddyfile:/etc/Caddyfile -p 2015:2015 abiosoft/caddy
+$ docker run -d -v $(pwd)/conf:/etc/caddy/conf.d -p 2015:2015 fat0troll/caddy
 ```
 
 Point your browser to `http://127.0.0.1:2015`.
@@ -110,40 +99,40 @@ You can build a docker image with custom plugins by specifying `plugins` build a
 ```
 docker build --build-arg \
     plugins=git,linode \
-    github.com/abiosoft/caddy-docker.git
+    github.com/fat0troll/caddy-docker.git
 ```
 
 ## Usage
 
-#### Default Caddyfile
+### Default Caddyfile
 
 The image contains a default Caddyfile.
 
 ```
 0.0.0.0
 browse
-fastcgi / 127.0.0.1:9000 php # php variant only
-on startup php-fpm7 # php variant only
 ```
 
-The last 2 lines are only present in the php variant.
+### Paths in container
 
-#### Paths in container
+Caddyfile: `/etc/caddy.conf`
 
-Caddyfile: `/etc/Caddyfile`
+Caddy configs folder: `/etc/caddy/conf.d`
 
 Sites root: `/srv`
 
-#### Using local Caddyfile and sites root
+Certificates root: `/root/.caddy`
+
+### Using local sites root
 
 Replace `/path/to/Caddyfile` and `/path/to/sites/root` accordingly.
 
 ```sh
 $ docker run -d \
     -v /path/to/sites/root:/srv \
-    -v path/to/Caddyfile:/etc/Caddyfile \
+    -v path/to/caddy/conf:/etc/caddy/conf.d \
     -p 2015:2015 \
-    abiosoft/caddy
+    fat0troll/caddy
 ```
 
 ### Let's Encrypt Auto SSL
@@ -158,13 +147,31 @@ mydomain.com
 tls user@host.com
 ```
 
-##### Run the image
+#### Let's Encrypt with DNS providers
+
+You can use Cloudflare or DNSimple for obtaining SSL certificates via `dns-01` challenge. This may be more convenient, especially when you trying to obtain certificate on a machine, different from one where you domain resolves.
+
+To use it, you must provide API keys for your DNS provider as environment variables. Without `docker-compose` you can use `--env-file` option to store them in file and not expose them in your shell history.
+
+```sh
+$ docker run -d \
+    -v $(pwd)/conf:/etc/caddy/conf.d \
+    -v $HOME/.caddy:/root/.caddy \
+    -p 80:80 -p 443:443 \
+    ---env-file=/path/to/envfile \
+    fat0troll/caddy
+```
+
+Variable names are `CLOUDFLARE_EMAIL`/`CLOUDFLARE_API_KEY` for Cloudflare and `DNSIMPLE_EMAIL`/`DNSIMPLE_OAUTH_TOKEN` for DNSimple.
+
+### Run the image with different ports
 
 You can change the the ports if ports 80 and 443 are not available on host. e.g. 81:80, 444:443
 
 ```sh
 $ docker run -d \
-    -v $(pwd)/Caddyfile:/etc/Caddyfile \
+    -v $(pwd)/conf:/etc/caddy/conf.d \
+    -v $HOME/.caddy:/root/.caddy \
     -p 80:80 -p 443:443 \
-    abiosoft/caddy
+    fat0troll/caddy
 ```

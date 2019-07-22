@@ -4,8 +4,8 @@
 FROM abiosoft/caddy:builder as builder
 
 ARG version="1.0.1"
-ARG plugins="git,cors,realip,expires,cache,cloudflare"
-ARG enable_telemetry="true"
+ARG plugins="git,cors,realip,expires,cache,cloudflare,dnsimple"
+ARG enable_telemetry="false"
 
 # process wrapper
 RUN go get -v github.com/abiosoft/parent
@@ -16,7 +16,7 @@ RUN VERSION=${version} PLUGINS=${plugins} ENABLE_TELEMETRY=${enable_telemetry} /
 # Final stage
 #
 FROM alpine:3.10
-LABEL maintainer "Abiola Ibrahim <abiola89@gmail.com>"
+LABEL maintainer "Vladimir Hodakov <vladimir@hodakov.me>"
 
 ARG version="1.0.1"
 LABEL caddy_version="$version"
@@ -42,14 +42,14 @@ RUN /usr/bin/caddy -version
 RUN /usr/bin/caddy -plugins
 
 EXPOSE 80 443 2015
-VOLUME /root/.caddy /srv
+VOLUME /etc/caddy/conf.d /srv /root/.caddy
 WORKDIR /srv
 
-COPY Caddyfile /etc/Caddyfile
-COPY index.html /srv/index.html
+COPY Caddyfile /etc/caddy/caddy.conf
+COPY index.html /srv/default/index.html
 
 # install process wrapper
 COPY --from=builder /go/bin/parent /bin/parent
 
 ENTRYPOINT ["/bin/parent", "caddy"]
-CMD ["--conf", "/etc/Caddyfile", "--log", "stdout", "--agree=$ACME_AGREE"]
+CMD ["--conf", "/etc/caddy/caddy.conf", "--log", "stdout", "--agree=$ACME_AGREE"]
