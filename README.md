@@ -4,7 +4,7 @@ A [Docker](https://docker.com) image for [Caddy](https://caddyserver.com). This 
 
 Plugins can be configured via the [`plugins` build arg](#custom-plugins).
 
-[![](https://images.microbadger.com/badges/image/abiosoft/caddy.svg)](https://microbadger.com/images/abiosoft/caddy "Get your own image badge on microbadger.com")
+[![](https://images.microbadger.com/badges/image/fat0troll/caddy.svg)](https://microbadger.com/images/fat0troll/caddy "Get your own image badge on microbadger.com")
 [![](https://img.shields.io/badge/version-1.0.1-blue.svg)](https://github.com/caddyserver/caddy/tree/v1.0.1)
 
 Check [abiosoft/caddy:builder](https://github.com/abiosoft/caddy-docker/blob/master/BUILDER.md) for generating cross-platform Caddy binaries.
@@ -149,7 +149,7 @@ tls user@host.com
 
 #### Let's Encrypt with DNS providers
 
-You can use Cloudflare or DNSimple for obtaining SSL certificates via `dns-01` challenge. This may be more convenient, especially when you trying to obtain certificate on a machine, different from one where you domain resolves.
+You can use Cloudflare or DNSimple for obtaining SSL certificates via `dns-01` challenge. This may be more convenient, especially when you trying to obtain certificate on a machine, different from one where you domain resolves. And this **works** on local environments too!
 
 To use it, you must provide API keys for your DNS provider as environment variables. Without `docker-compose` you can use `--env-file` option to store them in file and not expose them in your shell history.
 
