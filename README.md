@@ -1,6 +1,6 @@
 # caddy
 
-A [Docker](https://docker.com) image for [Caddy](https://caddyserver.com). This image includes [git](https://caddyserver.com/docs/http.git), [cors](https://caddyserver.com/docs/http.cors), [realip](https://caddyserver.com/docs/http.realip), [expires](https://caddyserver.com/docs/http.expires), [cache](https://caddyserver.com/docs/http.cache), [cloudflare](https://caddyserver.com/docs/tls.dns.cloudflare) and [dnsimple](https://caddyserver.com/docs/tls.dns.dnsimple) plugins.
+A [Docker](https://docker.com) image for [Caddy](https://caddyserver.com). This image includes [git](https://caddyserver.com/docs/http.git), [cors](https://caddyserver.com/docs/http.cors), [realip](https://caddyserver.com/docs/http.realip), [ipfilter](https://caddyserver.com/docs/http.ipfilter), [expires](https://caddyserver.com/docs/http.expires), [cache](https://caddyserver.com/docs/http.cache), [cloudflare](https://caddyserver.com/docs/tls.dns.cloudflare) and [dnsimple](https://caddyserver.com/docs/tls.dns.dnsimple) plugins.
 
 Plugins can be configured via the [`plugins` build arg](#custom-plugins).
 
