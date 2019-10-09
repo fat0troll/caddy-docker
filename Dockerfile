@@ -1,9 +1,13 @@
 #
 # Builder
 #
-FROM abiosoft/caddy:builder as builder
+FROM golang:1.13-alpine AS builder
 
-ARG version="1.0.2"
+RUN apk add --no-cache git gcc musl-dev
+
+COPY builder.sh /usr/bin/builder.sh
+
+ARG version="1.0.3"
 ARG plugins="git,cors,realip,ipfilter,expires,cache,cloudflare,dnsimple"
 ARG enable_telemetry="false"
 
@@ -18,7 +22,7 @@ RUN VERSION=${version} PLUGINS=${plugins} ENABLE_TELEMETRY=${enable_telemetry} /
 FROM alpine:3.10
 LABEL maintainer "Vladimir Hodakov <vladimir@hodakov.me>"
 
-ARG version="1.0.2"
+ARG version="1.0.3"
 LABEL caddy_version="$version"
 
 # Let's Encrypt Agreement
