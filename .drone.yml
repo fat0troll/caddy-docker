@@ -1,0 +1,14 @@
+---
+kind: pipeline
+type: docker
+name: build
+
+steps:
+- name: docker  
+  image: plugins/docker
+  settings:
+    username: fat0troll
+    password:
+      from_secret: registry_password
+    repo: fat0troll/caddy
+    auto_tag: true
